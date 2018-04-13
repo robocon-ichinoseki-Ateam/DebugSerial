@@ -72,10 +72,6 @@ public:
     void setUnderLine(bool isOn)  {isUnderLine = isOn;  updateLetterState(); }
     void setFlip(bool isOn)       {isFlip = isOn;       updateLetterState(); }
     
-    void brightBold() { printf("\033[1m"); isBrightBold = true; }
-    void underLine()  { printf("\033[4m"); isUnderLine = true; }
-    void flip()       { printf("\033[7m"); isFlip = true; }
-    
     // color
     void setLetterColor(color c) { printf("\033[%dm", 30 + (int)c); }
     void setBackColor(color c)   { printf("\033[%dm", 40 + (int)c); }
@@ -88,6 +84,9 @@ private:
         if(isUnderLine)  underLine();
         if(isFlip)       flip();
     }
+    void brightBold() { printf("\033[1m"); }
+    void underLine()  { printf("\033[4m"); }
+    void flip()       { printf("\033[7m"); }
     
 private:
     bool isBrightBold;
