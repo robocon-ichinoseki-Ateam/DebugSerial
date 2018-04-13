@@ -3,16 +3,16 @@
 
 enum color
 {
-    color_black,
+    color_black = 0,
     color_red,
     color_green,
     color_yellow,
     color_blue,
     color_magenta,
     color_cyan,
-    color_white,
-    color_gray,
-    color_default
+    color_white = 7,
+    color_gray = 7,
+    color_default = 9
 };
 
 enum cursorDir
@@ -26,64 +26,18 @@ enum cursorDir
 class DebugSerial : public Serial
 {
 public:
-    DebugSerial(PinName tx, PinName rx) : Serial(tx, rx) {}
-    DebugSerial(PinName tx, PinName rx, int baud) : Serial(tx, rx, baud) {}
+    DebugSerial(PinName tx, PinName rx) : Serial(tx, rx) { reset(); }
+    DebugSerial(PinName tx, PinName rx, int baud) : Serial(tx, rx, baud) { reset(); }
     
-    // cursor
-    void clear() { printf("\033[2J"); }
-    void setPos(int x, int y) { printf("\033[%d;%dH", x, y); }
-    void clearToLineEnd() { printf("\033[K"); }
-    void moveCursor(cursorDir dir, int distance)
+    void reset()
     {
-        for(int i = 0; i< distance; i++)
-        {
-            switch(dir)
-            {
-                case cursor_up:     printf("\033[1A"); break;
-                case cursor_down:   printf("\033[1B"); break;
-                case cursor_right:  printf("\033[1C"); break;
-                case cursor_left:   printf("\033[1D"); break;
-            }
-        }
-    }
-    
-    // letter attribute
-    void letterDefault() { printf("\033[0m"); }
-    void letterBrightBold()    { printf("\033[1m"); }
-    void letterline()    { printf("\033[4m"); }
-    void letterFlip()    { printf("\033[7m"); }
-    
-    // color
-    void setLetterColor(color c) 
-    {
-        switch(c)
-        {
-            case color_black:   printf("\033[30m"); break;
-            case color_red:     printf("\033[31m"); break;
-            case color_green:   printf("\033[32m"); break;
-            case color_yellow:  printf("\033[33m"); break;
-            case color_blue:    printf("\033[34m"); break;
-            case color_magenta: printf("\033[35m"); break;
-            case color_cyan:    printf("\033[36m"); break;
-            case color_white:   printf("\033[37m"); break;
-            case color_default: printf("\033[39m"); break;
-        }
-    }
-    
-    void setBackColor(color c) 
-    {
-        switch(c)
-        {
-            case color_black:   printf("\033[40m"); break;
-            case color_red:     printf("\033[41m"); break;
-            case color_green:   printf("\033[42m"); break;
-            case color_yellow:  printf("\033[43m"); break;
-            case color_blue:    printf("\033[44m"); break;
-            case color_magenta: printf("\033[45m"); break;
-            case color_cyan:    printf("\033[46m"); break;
-            case color_gray:    printf("\033[47m"); break;
-            case color_default: printf("\033[49m"); break;
-        }
+        cls();
+        setLetterColor(color_default);
+        setBackColor(color_default);
+        setLetterDefault();
+        isBrightBold = false;
+        isUnderLine = false;
+        isFlip = false;
     }
     
     void cls()
@@ -91,9 +45,54 @@ public:
         clear();
         setPos(0, 0);
     }
-
+        
+    // cursor
+    void clear()                { printf("\033[2J"); }
+    void setPos(int x, int y)   { printf("\033[%d;%dH", x, y); }
+    void clearToLineEnd()       { printf("\033[K"); }
+    void moveCursor(cursorDir dir, int distance)
+    {
+        switch(dir)
+        {
+            case cursor_up:      up(distance);    break;
+            case cursor_down:    down(distance);  break;
+            case cursor_right:   right(distance); break;
+            case cursor_left:    left(distance);  break;
+        }
+    }
+    
+    void up   (int distance) { printf("\033[%dA", distance); }
+    void down (int distance) { printf("\033[%dB", distance); }
+    void right(int distance) { printf("\033[%dC", distance); }
+    void left (int distance) { printf("\033[%dD", distance); }
+    
+    // letter attribute
+    void setLetterDefault()       { printf("\033[0m"); isBrightBold = isUnderLine = isFlip = false; }
+    void setBrightBold(bool isOn) {isBrightBold = isOn; updateLetterState(); }
+    void setUnderLine(bool isOn)  {isUnderLine = isOn;  updateLetterState(); }
+    void setFlip(bool isOn)       {isFlip = isOn;       updateLetterState(); }
+    
+    void brightBold() { printf("\033[1m"); isBrightBold = true; }
+    void underLine()  { printf("\033[4m"); isUnderLine = true; }
+    void flip()       { printf("\033[7m"); isFlip = true; }
+    
+    // color
+    void setLetterColor(color c) { printf("\033[%dm", 30 + (int)c); }
+    void setBackColor(color c)   { printf("\033[%dm", 40 + (int)c); }
+    
 private:
-
+    void updateLetterState()
+    {
+        setLetterDefault();
+        if(isBrightBold) brightBold();
+        if(isUnderLine)  underLine();
+        if(isFlip)       flip();
+    }
+    
+private:
+    bool isBrightBold;
+    bool isUnderLine;
+    bool isFlip;
 };
 
 #endif //_DEBUGSERIAL_H_
