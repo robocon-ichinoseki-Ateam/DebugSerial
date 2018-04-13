@@ -10,7 +10,6 @@ enum color
     color_blue,
     color_magenta,
     color_cyan,
-    color_white = 7,
     color_gray = 7,
     color_default = 9
 };
