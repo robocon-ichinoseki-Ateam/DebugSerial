@@ -96,7 +96,7 @@ enum color
     color_blue,
     color_magenta,
     color_cyan,
-    color_white,
+    color_gray,
     color_default
 };
 ```
