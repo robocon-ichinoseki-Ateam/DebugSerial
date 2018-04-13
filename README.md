@@ -9,7 +9,7 @@ Serialクラスを継承しているので基本的な使い方は同じ
 DebugSerial pc(USBTX, USBRX);
 ```
 ```cpp
-DebugSerial pc(USBTX, USBRX, 115200);
+DebugSerial pc(USBTX, USBRX, baudrate);
 ```
 
 #### clsコマンド再現
@@ -17,9 +17,14 @@ DebugSerial pc(USBTX, USBRX, 115200);
 pc.cls();
 ```
 
+#### 全ての状態をリセット
+```cpp
+pc.reset();
+```
+
 #### 画面クリア
 ```cpp
-pc.cls();
+pc.clear();
 ```
 
 #### カーソル位置指定
@@ -42,6 +47,15 @@ enum cursorDir
 };
 ```
 
+または
+
+```cpp
+pc.up(distance);
+pc.down(distance);
+pc.right(distance);
+pc.left(distance);
+```
+
 #### カーソル位置から行末までをクリア
 ```cpp
 pc.clearToLineEnd();
@@ -49,22 +63,22 @@ pc.clearToLineEnd();
 
 #### 文字属性・デフォルト
 ```cpp
-pc.letterDefault();
+pc.setLetterDefault();
 ```
 
 #### 文字属性・協調
 ```cpp
-pc.letterBrightBold();
+pc.setBrightBold(bool isOn);
 ```
 
 #### 文字属性・下線
 ```cpp
-pc.letterLine();
+pc.setUnderLine(bool isOn);
 ```
 
 #### 文字属性・反転
 ```cpp
-pc.letterFlip();
+pc.setFlip(bool isOn);
 ```
 
 #### 文字色変更
