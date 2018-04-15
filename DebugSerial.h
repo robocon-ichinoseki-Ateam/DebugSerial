@@ -1,6 +1,11 @@
 #ifndef _DEBUGSERIAL_H_
 #define _DEBUGSERIAL_H_
 
+#include "mbed.h"
+#ifdef _MINI_BED_
+#include "USBSerial.h"
+#endif
+
 enum color
 {
     color_black = 0,
@@ -22,12 +27,21 @@ enum cursorDir
     cursor_left
 };
 
+#ifdef _MINI_BED_
+class DebugSerial : public USBSerial
+{
+public:
+    DebugSerial() : USBSerial() { reset(); }
+    
+#else
 class DebugSerial : public Serial
 {
 public:
-    DebugSerial(PinName tx, PinName rx) : Serial(tx, rx) { reset(); }
-    DebugSerial(PinName tx, PinName rx, int baud) : Serial(tx, rx, baud) { reset(); }
-    
+    DebugSerial(PinName tx = USBTX, PinName rx = USBRX) : Serial(tx, rx) { reset(); }
+    DebugSerial(PinName tx = USBTX, PinName rx = USBRX, int baud = 9600) : Serial(tx, rx, baud) { reset(); }
+#endif
+
+
     void reset()
     {
         cls();
