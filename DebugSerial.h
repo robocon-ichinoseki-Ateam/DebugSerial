@@ -61,7 +61,7 @@ public:
         
     // cursor
     void clear()                { printf("\033[2J"); }
-    void setPos(int x, int y)   { printf("\033[%d;%dH", x, y); }
+    void setPos(int x, int y)   { printf("\033[%d;%dH", y, x); }
     void clearToLineEnd()       { printf("\033[K"); }
     void moveCursor(cursorDir dir, int distance)
     {
